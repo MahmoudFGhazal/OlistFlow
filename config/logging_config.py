@@ -1,13 +1,14 @@
+import datetime
 import logging
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
 Path("logs").mkdir(exist_ok=True)
 
-handler = RotatingFileHandler(
-    "logs/etl.log",
-    maxBytes=5_000_000,
-    backupCount=3,
+run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+handler = logging.FileHandler(
+    f"logs/etl_{run_id}.log",
     encoding="utf-8"
 )
 
