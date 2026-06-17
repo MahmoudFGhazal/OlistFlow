@@ -4,28 +4,43 @@ import pandas as pd
 
 DATASET_PATH = Path("data/raw")
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("etl.extract")
 
 def read_file(file: Path):
-    logger.info(f"Lendo arquivo: {file.name}")
+    try:
+        if file.suffix == ".csv":
+            df = pd.read_csv(file)
 
-    if file.suffix == ".csv":
-        return pd.read_csv(file)
+            logger.info(
+                f"Arquivo {file.name} carregado "
+                f"({len(df)} linhas)"
+            )
+
+            return df
+    except Exception:
+        logger.exception(
+            f"Erro ao processar o arquivo {file.name}"
+        )
+        raise
     
-    raise ValueError(
-        f"Tipo de arquivo não suportado: {file.suffix} "
-        f"para o arquivo '{file.name}'"
+    logger.warning(
+        f"Arquivo ignorado: {file.name} "
+        f"(tipo {file.suffix} não suportado)"
     )
 
-def extract_dataset(path: Path = DATASET_PATH):
-    if not path.exists():
-        raise FileNotFoundError(
-            f"Pasta não encontrada: {DATASET_PATH}"
-        )
+    return None
 
-    return {
-        file.stem: read_file(file)
-        for file in path.iterdir()
-        if file.is_file()
-    }
+def extract_dataset(path: Path = DATASET_PATH):
+    logger.info("Iniciando a extração de arquivos")
+
+    datasets = {}
+
+    for file in path.iterdir():
+        if file.is_file():
+            data = read_file(file)
+
+            if data is not None:
+                datasets[file.stem] = data
+
+    return datasets
     

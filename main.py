@@ -1,10 +1,18 @@
+import time
+from config import *
 import logging 
-from src.extract.excel_reader import extract_dataset
+from src.extract import extract_dataset
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger("etl")
 
-logging.info("Iniciando ETL")
+start = time.perf_counter()
+
+logger.info("Iniciando ETL")
 
 datasets = extract_dataset()
 
-logging.info("Arquivos carregados")
+elapsed = time.perf_counter() - start
+
+logger.info(
+    f"Arquivos carregados em {elapsed:.2f}s"
+)
