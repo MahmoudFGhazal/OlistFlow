@@ -2,8 +2,9 @@
 .venv/
 
 # Cache do Python
-__pycache__/
+__pycache__
 *.pyc
+.pytest_cache/
 
 # Logs
 logs/
