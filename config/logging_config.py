@@ -1,6 +1,5 @@
-import datetime
+from datetime import datetime
 import logging
-from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
 Path("logs").mkdir(exist_ok=True)
