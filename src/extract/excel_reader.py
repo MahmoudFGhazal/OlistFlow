@@ -6,7 +6,7 @@ DATASET_PATH = Path("data/raw")
 
 logger = logging.getLogger("etl.extract")
 
-def read_file(file: Path):
+def _read_file(file: Path):
     try:
         if file.suffix == ".csv":
             df = pd.read_csv(file)
@@ -37,7 +37,7 @@ def extract_dataset(path: Path = DATASET_PATH):
 
     for file in path.iterdir():
         if file.is_file():
-            data = read_file(file)
+            data = _read_file(file)
 
             if data is not None:
                 datasets[file.stem] = data
