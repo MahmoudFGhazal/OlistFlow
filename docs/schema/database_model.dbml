@@ -1,0 +1,154 @@
+// =====================
+// PRODUCTS
+// =====================
+
+Table products {
+  id varchar [primary key]
+  name_length integer [not null]
+  description_length integer [not null]
+  photos_qty integer [not null]
+  weight_g number [not null]
+  width_cm number [not null]
+  height_cm number [not null]
+  length_cm number [not null]
+  category_id varchar [not null]
+}
+
+Ref: products.category_id > categories.id
+
+
+Table categories {
+  id varchar [primary key]
+  name varchar [not null, unique]
+  name_english varchar [not null, unique]
+}
+
+
+// =====================
+// ORDERS
+// =====================
+
+Enum order_status {
+  delivered
+}
+
+Table orders {
+  id varchar [primary key]
+  status order_status [not null]
+  purchase_timestamp datetime [not null]
+  approved_at datetime [not null]
+  delivered_carrier_date datetime [not null]
+  delivered_customer_date datetime [not null]
+  estimated_delivery_date date [not null]
+  seller_id varchar [not null]
+  customer_id varchar [not null]
+}
+
+Ref: orders.customer_id > customers.id
+Ref: orders.seller_id > sellers.id
+
+Table order_items {
+  product_id varchar [not null]
+  order_id varchar [not null]
+
+  shipping_limit_date datetime [not null]
+  price number [not null]
+  freight_value number [not null]
+
+  indexes {
+    (order_id, product_id) [pk]
+  }
+}
+
+Ref: order_items.order_id > orders.id
+Ref: order_items.product_id > products.id
+
+// =====================
+// PAYMENTS
+// =====================
+
+Enum payment_type {
+  credit_card
+  debit_card
+}
+
+Table payments {
+  id varchar [primary key]
+
+  order_id varchar [not null]
+  sequential integer [not null]
+  type payment_type [not null]
+  installments integer [not null]
+  value number [not null]
+}
+
+Ref: payments.order_id > orders.id
+
+
+// =====================
+// REVIEWS
+// =====================
+
+Table reviews {
+  id varchar [primary key]
+  order_id varchar [not null]
+
+  score integer [not null, note: '1-5']
+  title varchar
+  comment varchar
+  creation_date datetime [not null]
+  answer_timestamp datetime [not null]
+}
+
+Ref: reviews.order_id > orders.id
+
+
+// =====================
+// PEOPLE
+// =====================
+
+Table customers {
+  id varchar [primary key]
+  zip_code_id varchar [not null]
+}
+
+Ref: customers.zip_code_id > locations.id
+
+
+Table sellers {
+  id varchar [primary key]
+  zip_code_id varchar [not null]
+}
+
+Ref: sellers.zip_code_id > locations.id
+
+
+// =====================
+// LOCATION
+// =====================
+
+Table locations {
+  id varchar [primary key]
+  zip_code_prefix varchar [not null]
+  latitude decimal [not null, note: 'decimal(10,8)']
+  longitude decimal [not null, note: 'decimal(11,8)']
+  city_id varchar [not null]
+}
+
+Ref: locations.city_id > cities.id
+
+
+Table cities {
+  id varchar [primary key]
+  name varchar [not null, unique]
+  state_id varchar [not null]
+}
+
+Ref: cities.state_id > states.id
+
+
+Table states {
+  id varchar [primary key]
+  name varchar [not null, unique]
+  uf varchar [not null, unique]
+}
