@@ -6,6 +6,18 @@ DATASET_PATH = Path("data/raw")
 
 logger = logging.getLogger("etl.extract")
 
+DATASET_NAMES = {
+    "olist_customers_dataset": "customers",
+    "olist_geolocation_dataset": "locations",
+    "olist_orders_dataset": "orders",
+    "olist_order_items_dataset": "order_items",
+    "olist_order_payments_dataset": "payments",
+    "olist_order_reviews_dataset": "reviews",
+    "olist_products_dataset": "products",
+    "olist_sellers_dataset": "sellers",
+    "product_category_name_translation": "categories",
+}
+
 def _read_file(file: Path):
     try:
         if file.suffix == ".csv":
@@ -40,7 +52,13 @@ def extract_dataset(path: Path = DATASET_PATH):
             data = _read_file(file)
 
             if data is not None:
-                datasets[file.stem] = data
+                dataset_name = DATASET_NAMES.get(
+                    file.stem,
+                    file.stem
+                )
+
+                datasets[dataset_name] = data
+
 
     return datasets
     
