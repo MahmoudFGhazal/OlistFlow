@@ -3,6 +3,7 @@ from typing import TypedDict
 
 import pandas as pd
 
+from .helper import normalize_nulls
 from .customer import transform_customers
 from .location import transform_locations
 from .orders import transform_order_items, transform_orders, transform_payments, transform_reviews
@@ -25,6 +26,11 @@ class TransformedDatasets(TypedDict):
 
 def transform_datasets(raw: dict[str, pd.DataFrame]) -> TransformedDatasets:
     logger.info("Inciando Transformações")
+
+    raw = {
+        name: normalize_nulls(df)
+        for name, df in raw.items()
+    }
 
     categories = transform_categories(raw["categories"])
     customers = transform_customers(raw["customers"])
