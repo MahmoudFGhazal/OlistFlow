@@ -59,7 +59,7 @@ def transform_customers(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 def _clean_customers(df: pd.DataFrame) -> pd.DataFrame:
-    logger.info("Limpando customers")
+    logger.info(f"Limpando {TABLE_NAME}")
 
     df = df.copy()
 

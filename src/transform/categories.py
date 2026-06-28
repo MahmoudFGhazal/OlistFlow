@@ -45,7 +45,7 @@ def transform_categories(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 def _clean_categories(df: pd.DataFrame) -> pd.DataFrame:
-    logger.info("Limpando categories")
+    logger.info(f"Limpando {TABLE_NAME}")
 
     df = df.copy()
 
