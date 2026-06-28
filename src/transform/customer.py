@@ -3,8 +3,6 @@ import pandas as pd
 
 from .helper import validate_columns, validate_required_values
 
-logger = logging.getLogger("etl.transform.customers")
-
 """
 customer_id* string
 customer_unique_id* string
@@ -14,6 +12,8 @@ customer_state*: string maisculo
 
 sem duplicatas
 """
+
+TABLE_NAME="customers"
 
 CUSTOMER_ID = "customer_id"
 CUSTOMER_UNIQUE_ID = "customer_unique_id"
@@ -37,14 +37,16 @@ REQUIRED_COLUMNS = [
     CUSTOMER_STATE
 ]
 
+logger = logging.getLogger(f"etl.transform.{TABLE_NAME}")
+
 def transform_customers(df: pd.DataFrame) -> pd.DataFrame:
     logger.info("Transformando customers")
 
-    validate_columns(df, required_columns=COLUMNS, table_name="customers")
+    validate_columns(df, required_columns=COLUMNS, table_name=TABLE_NAME)
 
     df = _clean_customers(df)
 
-    df = validate_required_values(df, required_columns=REQUIRED_COLUMNS, table_name="customers")
+    df = validate_required_values(df, required_columns=REQUIRED_COLUMNS, table_name=TABLE_NAME)
 
     df = df.drop_duplicates(
         subset=[
@@ -52,7 +54,7 @@ def transform_customers(df: pd.DataFrame) -> pd.DataFrame:
         ]
     )
 
-    logger.info(f"Customers transformada ({len(df)} registros)")
+    logger.info(f"{TABLE_NAME.capitalize()} transformada ({len(df)} registros)")
 
     return df
 
