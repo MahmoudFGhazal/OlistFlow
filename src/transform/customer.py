@@ -66,13 +66,13 @@ def _clean_customers(df: pd.DataFrame) -> pd.DataFrame:
     df[CUSTOMER_ID] = (
         df[CUSTOMER_ID]
         .astype("string")
-        .str.replace(" ", "", regex=True)
+        .str.strip()
     )
 
     df[CUSTOMER_UNIQUE_ID] = (
         df[CUSTOMER_UNIQUE_ID]
         .astype("string")
-        .str.replace(" ", "", regex=True)
+        .str.strip()
     )
 
     df[CUSTOMER_ZIP_CODE_PREFIX] = (

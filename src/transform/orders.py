@@ -1,63 +1,107 @@
 import logging
 import pandas as pd
 
-logger = logging.getLogger("etl.transform.orders")
+from transform.helper import validate_columns, validate_required_values
 
-DATE_COLS = [
-    "order_purchase_timestamp",
-    "order_approved_at",
-    "order_delivered_carrier_date",
-    "order_delivered_customer_date",
-    "order_estimated_delivery_date",
+"""
+order_id* string
+customer_id* string
+order_status* string
+order_purchase_timestamp* datetime
+order_approved_at* datetime
+order_delivered_carrier_date* datetime
+order_delivered_customer_date* datetime
+order_estimated_delivery_date* datetime
+
+
+sem duplicatas
+"""
+
+TABLE_NAME="orders"
+
+ORDER_ID = "order_id"
+CUSTOMER_ID = "customer_id"
+ORDER_STATUS = "order_status"
+ORDER_PURCHASE_TIMESTAMP = "order_purchase_timestamp"
+ORDER_APPROVED_AT = "order_approved_at"
+ORDER_DELIVERED_CARRIER_DATE = "order_delivered_carrier_date"
+ORDER_DELIVERED_CUSTOMER_DATE = "order_delivered_customer_date"
+ORDER_ESTIMATED_DELIVERY_DATE = "order_estimated_delivery_date"
+
+COLUMNS = [
+    ORDER_ID,
+    CUSTOMER_ID,
+    ORDER_STATUS,
+    ORDER_PURCHASE_TIMESTAMP,
+    ORDER_APPROVED_AT,
+    ORDER_DELIVERED_CARRIER_DATE,
+    ORDER_DELIVERED_CUSTOMER_DATE,
+    ORDER_ESTIMATED_DELIVERY_DATE,
 ]
 
+REQUIRED_COLUMNS = [
+    ORDER_ID,
+    CUSTOMER_ID,
+    ORDER_STATUS,
+    ORDER_PURCHASE_TIMESTAMP,
+    ORDER_APPROVED_AT,
+    ORDER_DELIVERED_CARRIER_DATE,
+    ORDER_DELIVERED_CUSTOMER_DATE,
+    ORDER_ESTIMATED_DELIVERY_DATE,
+]
+
+logger = logging.getLogger(f"etl.transform.{TABLE_NAME}")
+
 def transform_orders(df: pd.DataFrame) -> pd.DataFrame:
-    logger.info("Transformando orders")
+    logger.info(f"Transformando {TABLE_NAME}")
 
-    df = df.drop_duplicates(subset=["order_id"])
+    validate_columns(df, required_columns=COLUMNS, table_name=TABLE_NAME)
 
-    for col in DATE_COLS:
-        df[col] = pd.to_datetime(df[col], errors="coerce")
+    df = _clean_orders(df)
 
-    cancelled_mask = df["order_status"].isin(["canceled", "unavailable"])
-    n_cancelled = cancelled_mask.sum()
-    if n_cancelled:
-        logger.info(f"{n_cancelled} pedidos cancelados/unavailable (datas de entrega NaT é esperado)")
+    df = validate_required_values(df, required_columns=REQUIRED_COLUMNS, table_name=TABLE_NAME)
 
-    logger.info(f"Orders transformada ({len(df)} registros)")
+    df = df.drop_duplicates(
+        subset=[
+            ORDER_ID,
+        ]
+    )
+
+    logger.info(f"{TABLE_NAME.capitalize()} transformada ({len(df)} registros)")
+
     return df
 
+def _clean_orders(df: pd.DataFrame) -> pd.DataFrame:
+    logger.info(f"Limpando {TABLE_NAME}")
 
-def transform_order_items(df: pd.DataFrame) -> pd.DataFrame:
-    logger.info("Transformando order_items")
+    df = df.copy()
 
-    df = df.drop_duplicates(subset=["order_id", "order_item_id"])
+    df[ORDER_ID] = (
+        df[ORDER_ID]
+        .astype("string")
+        .str.replace(" ", "", regex=True)
+    )
 
-    df["shipping_limit_date"] = pd.to_datetime(df["shipping_limit_date"], errors="coerce")
+    df[CUSTOMER_ID] = (
+        df[CUSTOMER_ID]
+        .astype("string")
+        .str.replace(" ", "", regex=True)
+    )
 
-    logger.info(f"Order_items transformada ({len(df)} registros)")
-    return df
+    df[ORDER_STATUS] = (
+        df[ORDER_STATUS]
+        .astype("string")
+        .str.strip()
+        .str.lower()
+    )
 
+    df[ORDER_ID] = (
+        df[ORDER_ID]
+        .astype("string")
+        .str.replace(" ", "", regex=True)
+    )
 
-def transform_payments(df: pd.DataFrame) -> pd.DataFrame:
-    logger.info("Transformando payments")
-
-    df = df.drop_duplicates(subset=["order_id", "payment_sequential"])
-
-    logger.info(f"Payments transformada ({len(df)} registros)")
-    return df
-
-
-def transform_reviews(df: pd.DataFrame) -> pd.DataFrame:
-    logger.info("Transformando reviews")
-
-    df = df.drop_duplicates(subset=["review_id"])
-
-    df["review_creation_date"] = pd.to_datetime(df["review_creation_date"], errors="coerce")
-    df["review_answer_timestamp"] = pd.to_datetime(df["review_answer_timestamp"], errors="coerce")
-
-    df["review_comment_title"] = df["review_comment_title"].fillna("")
-    df["review_comment_message"] = df["review_comment_message"].fillna("")
-
-    logger.info(f"Reviews transformada ({len(df)} registros)")
-    return df
+    df[ORDER_PURCHASE_TIMESTAMP] = pd.to_datetime(
+        df[ORDER_PURCHASE_TIMESTAMP],
+        errors="coerce"
+    )
