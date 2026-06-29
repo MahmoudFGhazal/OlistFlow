@@ -43,7 +43,7 @@ REQUIRED_COLUMNS = [
 logger = logging.getLogger(f"etl.transform.{TABLE_NAME}")
 
 def transform_products(df: pd.DataFrame, categories: pd.DataFrame) -> pd.DataFrame:
-    logger.info("Transformando products")
+    logger.info(f"Transformando {TABLE_NAME}")
 
     validate_columns(df, required_columns=COLUMNS, table_name=TABLE_NAME)
 
