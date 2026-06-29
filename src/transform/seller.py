@@ -46,7 +46,7 @@ def transform_sellers(df: pd.DataFrame) -> pd.DataFrame:
 
     df = df.drop_duplicates(
         subset=[
-            PRODUCT_ID,
+            SELLER_ID,
         ]
     )
 
