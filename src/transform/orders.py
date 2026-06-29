@@ -44,9 +44,6 @@ REQUIRED_COLUMNS = [
     CUSTOMER_ID,
     ORDER_STATUS,
     ORDER_PURCHASE_TIMESTAMP,
-    ORDER_APPROVED_AT,
-    ORDER_DELIVERED_CARRIER_DATE,
-    ORDER_DELIVERED_CUSTOMER_DATE,
     ORDER_ESTIMATED_DELIVERY_DATE,
 ]
 
@@ -95,13 +92,13 @@ def _clean_orders(df: pd.DataFrame) -> pd.DataFrame:
         .str.lower()
     )
 
-    df[ORDER_ID] = (
-        df[ORDER_ID]
-        .astype("string")
-        .str.replace(" ", "", regex=True)
-    )
+    DATETIME_COLUMNS = [
+        ORDER_PURCHASE_TIMESTAMP,
+        ORDER_APPROVED_AT,
+        ORDER_DELIVERED_CARRIER_DATE,
+        ORDER_DELIVERED_CUSTOMER_DATE,
+        ORDER_ESTIMATED_DELIVERY_DATE,
+    ]
 
-    df[ORDER_PURCHASE_TIMESTAMP] = pd.to_datetime(
-        df[ORDER_PURCHASE_TIMESTAMP],
-        errors="coerce"
-    )
+    for column in DATETIME_COLUMNS:
+        df[column] = pd.to_datetime(df[column], errors="coerce")
