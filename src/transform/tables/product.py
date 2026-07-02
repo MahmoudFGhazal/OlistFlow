@@ -37,6 +37,10 @@ COLUMNS = [
 
 REQUIRED_COLUMNS = [
     PRODUCT_ID,
+    PRODUCT_WEIGHT_G,
+    PRODUCT_LENGTH_CM,
+    PRODUCT_HEIGHT_CM,
+    PRODUCT_WIDTH_CM,
 ]
 
 logger = logging.getLogger(f"etl.transform.{TABLE_NAME}")
