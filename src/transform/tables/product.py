@@ -105,3 +105,27 @@ def _clean_products(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     return df
+
+def _apply_products_rules(df: pd.DataFrame) -> pd.DataFrame:
+    logger.info(f"Aplicando regras {TABLE_NAME}")
+
+    df = df.copy()
+
+    # =========================
+    # Regra 1: fotos >= 0
+    # =========================
+    df = df[df[PRODUCT_PHOTOS_QTY] >= 0]
+
+    # =========================
+    # Regra 2: peso deve ser positivo
+    # =========================
+    df = df[df[PRODUCT_WEIGHT_G] > 0]
+
+    # =========================
+    # Regra 3: dimensões devem ser válidas (> 0)
+    # =========================
+    df = df[df[PRODUCT_LENGTH_CM] > 0]
+    df = df[df[PRODUCT_HEIGHT_CM] > 0]
+    df = df[df[PRODUCT_WIDTH_CM] > 0]
+
+    return df
