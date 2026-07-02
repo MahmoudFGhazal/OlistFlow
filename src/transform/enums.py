@@ -3,7 +3,7 @@
 from enum import Enum
 
 
-class UF(str, Enum):
+class UF(Enum):
     AC = "AC"
     AL = "AL"
     AM = "AM"
@@ -31,3 +31,14 @@ class UF(str, Enum):
     SE = "SE"
     SP = "SP"
     TO = "TO"
+
+class OrderStatus(Enum):
+    APPROVED = "approved"
+    CANCELED = "canceled"
+    CREATED = "created"
+    DELIVERED = "delivered"
+    INVOICED = "invoiced"
+    PROCESSING = "processing"
+    SHIPPED = "shipped"
+    UNAVAILABLE = "unavailable"
+

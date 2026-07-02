@@ -60,7 +60,7 @@ def transform_order_items(df: pd.DataFrame) -> pd.DataFrame:
         ]
     )
 
-    df = _apply_order_items_business_rules(df)
+    df = _apply_order_items_rules(df)
 
     logger.info(f"{TABLE_NAME.capitalize()} transformada ({len(df)} registros)")
 
@@ -106,7 +106,7 @@ def _clean_order_items(df: pd.DataFrame) -> pd.DataFrame:
 
     return df
 
-def _apply_order_items_business_rules(df: pd.DataFrame) -> pd.DataFrame:
+def _apply_order_items_rules(df: pd.DataFrame) -> pd.DataFrame:
     logger.info(f"Aplicando regras {TABLE_NAME}")
     
     df = df.copy()
