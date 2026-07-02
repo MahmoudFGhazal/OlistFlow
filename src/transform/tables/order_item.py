@@ -60,6 +60,8 @@ def transform_order_items(df: pd.DataFrame) -> pd.DataFrame:
         ]
     )
 
+    df = _apply_order_items_business_rules(df)
+
     logger.info(f"{TABLE_NAME.capitalize()} transformada ({len(df)} registros)")
 
     return df
@@ -101,5 +103,22 @@ def _clean_order_items(df: pd.DataFrame) -> pd.DataFrame:
         df[FREIGHT_VALUE],
         errors="coerce"
     )
+
+    return df
+
+def _apply_order_items_business_rules(df: pd.DataFrame) -> pd.DataFrame:
+    logger.info(f"Aplicando regras {TABLE_NAME}")
+    
+    df = df.copy()
+
+    # =========================
+    # Regra 1: PRICE > 0
+    # =========================
+    df = df[df[PRICE] > 0]
+
+    # =========================
+    # Regra 2: FREIGHT >= 0
+    # =========================
+    df = df[df[FREIGHT_VALUE] >= 0]
 
     return df

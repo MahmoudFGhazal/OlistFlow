@@ -57,6 +57,8 @@ def transform_locations(df: pd.DataFrame) -> pd.DataFrame:
         ]
     )
 
+    df = _apply_locations_business_rules(df)
+
     logger.info(f"{TABLE_NAME.capitalize()} transformada ({len(df)} registros)")
 
     return df
@@ -100,10 +102,8 @@ def _clean_locations(df: pd.DataFrame) -> pd.DataFrame:
 
     return df
 
-def apply_locations_business_rules(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Regras de negócio para locations
-    """
+def _apply_locations_business_rules(df: pd.DataFrame) -> pd.DataFrame:
+    logger.info(f"Aplicando regras {TABLE_NAME}")
 
     df = df.copy()
 
