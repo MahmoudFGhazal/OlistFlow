@@ -110,12 +110,6 @@ def _apply_locations_rules(df: pd.DataFrame) -> pd.DataFrame:
     # =========================
     # Regra 1: ZIP CODE = 5 caracteres
     # =========================
-    df[GEOLOCATION_ZIP_CODE_PREFIX] = (
-        df[GEOLOCATION_ZIP_CODE_PREFIX]
-        .astype("string")
-        .str.zfill(5)
-    )
-
     df = df[df[GEOLOCATION_ZIP_CODE_PREFIX].str.len() == 5]
 
     # =========================
@@ -136,5 +130,18 @@ def _apply_locations_rules(df: pd.DataFrame) -> pd.DataFrame:
     df = df[
         df[GEOLOCATION_LNG].between(-180, 180)
     ]
+
+    # =========================
+    # Regra 5: Normalização geográfica por ZIP + STATE + CITY
+    # (média de lat/lng por localidade)
+    # =========================
+    GROUP_COLS = [
+        GEOLOCATION_ZIP_CODE_PREFIX,
+        GEOLOCATION_STATE,
+        GEOLOCATION_CITY,
+    ]
+
+    df[GEOLOCATION_LAT] = df.groupby(GROUP_COLS)[GEOLOCATION_LAT].transform("mean")
+    df[GEOLOCATION_LNG] = df.groupby(GROUP_COLS)[GEOLOCATION_LNG].transform("mean")
 
     return df
