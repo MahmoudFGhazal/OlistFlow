@@ -1,7 +1,7 @@
 import logging
 import pandas as pd
 
-from .helper import validate_columns, validate_required_values
+from ..helper import validate_columns, validate_required_values
 
 """
 order_id* string

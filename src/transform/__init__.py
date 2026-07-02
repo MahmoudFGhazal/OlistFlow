@@ -4,12 +4,12 @@ from typing import TypedDict
 import pandas as pd
 
 from .helper import normalize_nulls
-from .customer import transform_customers
-from .location import transform_locations
-from .orders import transform_orders
-from .product import transform_products
-from .seller import transform_sellers
-from .categories import transform_categories
+from .tables.customer import transform_customers
+from .tables.location import transform_locations
+from .tables.orders import transform_orders
+from .tables.product import transform_products
+from .tables.seller import transform_sellers
+from .tables.categories import transform_categories
 
 logger = logging.getLogger("etl.transform")
 
