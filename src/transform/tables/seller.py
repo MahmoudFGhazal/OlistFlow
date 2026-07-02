@@ -50,6 +50,8 @@ def transform_sellers(df: pd.DataFrame) -> pd.DataFrame:
         ]
     )
 
+    df = _apply_sellers_rules(df)
+
     logger.info(f"{TABLE_NAME.capitalize()} transformada ({len(df)} registros)")
 
     return df
@@ -85,5 +87,27 @@ def _clean_sellers(df: pd.DataFrame) -> pd.DataFrame:
         .str.strip()
         .str.upper()
     )
+
+    return df
+
+def _apply_sellers_rules(df: pd.DataFrame) -> pd.DataFrame:
+    logger.info(f"Aplicando regras {TABLE_NAME}")
+
+    df = df.copy()
+
+    # =========================
+    # Regra 1: estado deve ter exatamente 2 caracteres (UF)
+    # =========================
+    df = df[df[SELLER_STATE].str.len() == 2]
+
+    # =========================
+    # Regra 2: cidade não pode ser string vazia após limpeza
+    # =========================
+    df = df[df[SELLER_CITY] != ""]
+
+    # =========================
+    # Regra 3: CEP deve ter pelo menos 5 dígitos
+    # =========================
+    df = df[df[SELLER_ZIP_CODE_PREFIX].str.len() >= 5]
 
     return df
