@@ -90,7 +90,7 @@ Table reviews {
   title varchar
   comment varchar
   created_at datetime [not null]
-  answered_at datetime [not null]
+  answered_at datetime 
 }
 
 Ref: reviews.order_id > orders.id
@@ -124,7 +124,7 @@ Table locations {
   id varchar [primary key]
   postal_code_prefix varchar [not null]
   latitude decimal(10,8) [not null]
-  longitude decimal(10,8) [not null]
+  longitude decimal(11,8) [not null]
   city_id varchar [not null]
 }
 
