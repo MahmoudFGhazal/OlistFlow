@@ -42,6 +42,7 @@ def transform_categories(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     logger.info(f"{TABLE_NAME.capitalize()} transformada ({len(df)} registros)")
+    
     return df
 
 def _clean_categories(df: pd.DataFrame) -> pd.DataFrame:

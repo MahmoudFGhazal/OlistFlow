@@ -1,6 +1,7 @@
 import logging
 import pandas as pd
 
+from ..enums import UF
 from ..helper import validate_columns, validate_required_values
 
 """
@@ -54,6 +55,8 @@ def transform_customers(df: pd.DataFrame) -> pd.DataFrame:
         ]
     )
 
+    df = _apply_customers_rules(df)
+
     logger.info(f"{TABLE_NAME.capitalize()} transformada ({len(df)} registros)")
 
     return df
@@ -96,4 +99,27 @@ def _clean_customers(df: pd.DataFrame) -> pd.DataFrame:
         .str.upper()
     )
 
+    return df
+
+def _apply_customers_rules(df: pd.DataFrame) -> pd.DataFrame:
+    logger.info(f"Aplicando regras {TABLE_NAME}")
+
+    df = df.copy()
+
+    # =========================
+    # Regra 1: ZIP CODE = 5 caracteres
+    # =========================
+    df[CUSTOMER_ZIP_CODE_PREFIX] = (
+        df[CUSTOMER_ZIP_CODE_PREFIX]
+        .astype("string")
+        .str.zfill(5)   
+    )
+
+    df = df[df[CUSTOMER_ZIP_CODE_PREFIX].str.len() == 5]
+
+    # =========================
+    # Regra 2: STATE deve estar no ENUM (UF Brasil)
+    # =========================
+    df = df[df[CUSTOMER_STATE].isin([u.value for u in UF])]
+    
     return df
