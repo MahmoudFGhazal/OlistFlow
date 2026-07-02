@@ -56,6 +56,8 @@ def transform_products(df: pd.DataFrame) -> pd.DataFrame:
         ]
     )
 
+    df = _apply_products_rules(df)
+
     logger.info(f"{TABLE_NAME.capitalize()} transformada ({len(df)} registros)")
 
     return df

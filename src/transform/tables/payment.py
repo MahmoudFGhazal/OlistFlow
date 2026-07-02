@@ -1,8 +1,7 @@
 import logging
 import pandas as pd
 
-from transform.enums import PaymentType
-
+from ..enums import PaymentType
 from ..helper import validate_columns, validate_required_values
 
 """
