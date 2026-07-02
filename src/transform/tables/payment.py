@@ -50,6 +50,8 @@ def transform_payments(df: pd.DataFrame) -> pd.DataFrame:
         table_name=TABLE_NAME
     )
 
+    df = _apply_payments_rules(df)
+    
     logger.info(f"{TABLE_NAME.capitalize()} transformada ({len(df)} registros)")
 
     return df
@@ -81,5 +83,27 @@ def _clean_payments(df: pd.DataFrame) -> pd.DataFrame:
         df[PAYMENT_INSTALLMENTS],
         errors="coerce"
     ).astype("Int64")
+
+    return df
+
+def _apply_payments_rules(df: pd.DataFrame) -> pd.DataFrame:
+    logger.info(f"Aplicando regras {TABLE_NAME}")
+
+    df = df.copy()
+
+    # =========================
+    # Regra 2: payment_sequential válido (>= 1)
+    # =========================
+    df = df[df[PAYMENT_SEQUENTIAL] >= 1]
+
+    # =========================
+    # Regra 3: payment_type deve estar no enum
+    # =========================
+    print(sorted(df[PAYMENT_TYPE].dropna().unique()))
+
+    # =========================
+    # Regra 4: installments deve ser >= 1
+    # =========================
+    df = df[df[PAYMENT_INSTALLMENTS] >= 1]
 
     return df
