@@ -1,6 +1,7 @@
 import logging
 import pandas as pd
 
+from ..enums import OrderStatus
 from ..helper import validate_columns, validate_required_values
 
 """
@@ -64,6 +65,8 @@ def transform_orders(df: pd.DataFrame) -> pd.DataFrame:
         ]
     )
 
+    df = _apply_orders_rules(df)
+
     logger.info(f"{TABLE_NAME.capitalize()} transformada ({len(df)} registros)")
 
     return df
@@ -102,5 +105,34 @@ def _clean_orders(df: pd.DataFrame) -> pd.DataFrame:
 
     for column in DATETIME_COLUMNS:
         df[column] = pd.to_datetime(df[column], errors="coerce")
+
+    return df
+
+def _apply_orders_rules(df: pd.DataFrame) -> pd.DataFrame:
+    logger.info(f"Aplicando regras {TABLE_NAME}")
+
+    df = df.copy()
+
+    # =========================
+    # Regra 1: STATUS válido
+    # =========================
+    df = df[df[ORDER_STATUS].isin([u.value for u in OrderStatus])]
+
+    # =========================
+    # Regra 2: aprovado não pode ser antes da compra
+    # =========================
+    df = df[
+        df[ORDER_APPROVED_AT].isna()
+        | (df[ORDER_APPROVED_AT] >= df[ORDER_PURCHASE_TIMESTAMP])
+    ]
+
+    # =========================
+    # Regra 3: delivery carrier não pode ser depois da entrega ao cliente (se existir)
+    # =========================
+    df = df[
+        df[ORDER_DELIVERED_CARRIER_DATE].isna()
+        | df[ORDER_DELIVERED_CUSTOMER_DATE].isna()
+        | (df[ORDER_DELIVERED_CARRIER_DATE] <= df[ORDER_DELIVERED_CUSTOMER_DATE])
+    ]
 
     return df
