@@ -54,6 +54,12 @@ def transform_order_items(df: pd.DataFrame) -> pd.DataFrame:
 
     df = validate_required_values(df, required_columns=REQUIRED_COLUMNS, table_name=TABLE_NAME)
 
+    df = df.drop_duplicates(
+        subset=[
+            ORDER_ITEM_ID
+        ]
+    )
+
     logger.info(f"{TABLE_NAME.capitalize()} transformada ({len(df)} registros)")
 
     return df
