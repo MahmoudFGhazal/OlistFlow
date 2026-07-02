@@ -6,7 +6,7 @@ import pandas as pd
 from .helper import normalize_nulls
 from .customer import transform_customers
 from .location import transform_locations
-from .orders import transform_order_items, transform_orders, transform_payments, transform_reviews
+from .orders import transform_orders
 from .product import transform_products
 from .seller import transform_sellers
 from .categories import transform_categories
@@ -36,11 +36,11 @@ def transform_datasets(raw: dict[str, pd.DataFrame]) -> TransformedDatasets:
     customers = transform_customers(raw["customers"])
     locations = transform_locations(raw["locations"])
     sellers = transform_sellers(raw["sellers"])
-    products = transform_products(raw["products"], categories)
+    products = transform_products(raw["products"])
     orders = transform_orders(raw["orders"])
-    order_items = transform_order_items(raw["order_items"])
-    payments = transform_payments(raw["payments"])
-    reviews = transform_reviews(raw["reviews"])
+    #order_items = transform_order_items(raw["order_items"])
+    ##payments = transform_payments(raw["payments"])
+    #reviews = transform_reviews(raw["reviews"])
 
     logger.info("Transformação concluídas")
 
@@ -51,7 +51,7 @@ def transform_datasets(raw: dict[str, pd.DataFrame]) -> TransformedDatasets:
         sellers=sellers,
         products=products,
         orders=orders,
-        order_items=order_items,
-        payments=payments,
-        reviews=reviews,
+        #order_items=order_items,
+        #payments=payments,
+        #reviews=reviews,
     )

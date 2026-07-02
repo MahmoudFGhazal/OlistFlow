@@ -1,7 +1,7 @@
 import logging
 import pandas as pd
 
-from transform.helper import validate_columns, validate_required_values
+from .helper import validate_columns, validate_required_values
 
 """
 order_id* string
@@ -102,3 +102,5 @@ def _clean_orders(df: pd.DataFrame) -> pd.DataFrame:
 
     for column in DATETIME_COLUMNS:
         df[column] = pd.to_datetime(df[column], errors="coerce")
+
+    return df

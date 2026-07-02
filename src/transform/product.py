@@ -1,7 +1,7 @@
 import logging
 import pandas as pd
 
-from transform.helper import validate_columns, validate_required_values
+from .helper import validate_columns, validate_required_values
 
 """
 product_id* string
@@ -42,7 +42,7 @@ REQUIRED_COLUMNS = [
 
 logger = logging.getLogger(f"etl.transform.{TABLE_NAME}")
 
-def transform_products(df: pd.DataFrame, categories: pd.DataFrame) -> pd.DataFrame:
+def transform_products(df: pd.DataFrame) -> pd.DataFrame:
     logger.info(f"Transformando {TABLE_NAME}")
 
     validate_columns(df, required_columns=COLUMNS, table_name=TABLE_NAME)
