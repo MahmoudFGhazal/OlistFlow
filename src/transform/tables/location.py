@@ -1,6 +1,7 @@
 import logging
 import pandas as pd
 
+from ..enums import UF
 from ..helper import validate_columns, validate_required_values
 
 """
@@ -96,5 +97,44 @@ def _clean_locations(df: pd.DataFrame) -> pd.DataFrame:
         .str.replace(r"\s+", " ", regex=True)
         .str.upper()
     )
+
+    return df
+
+def apply_locations_business_rules(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Regras de negócio para locations
+    """
+
+    df = df.copy()
+
+    # =========================
+    # Regra 1: ZIP CODE = 5 caracteres
+    # =========================
+    df[GEOLOCATION_ZIP_CODE_PREFIX] = (
+        df[GEOLOCATION_ZIP_CODE_PREFIX]
+        .astype("string")
+        .str.zfill(5)
+    )
+
+    df = df[df[GEOLOCATION_ZIP_CODE_PREFIX].str.len() == 5]
+
+    # =========================
+    # Regra 2: STATE válido (Brasil)
+    # =========================
+    df = df[df[GEOLOCATION_STATE].isin([u.value for u in UF])]
+
+    # =========================
+    # Regra 3: LATITUDE válida
+    # =========================
+    df = df[
+        df[GEOLOCATION_LAT].between(-90, 90)
+    ]
+
+    # =========================
+    # Regra 4: LONGITUDE válida
+    # =========================
+    df = df[
+        df[GEOLOCATION_LNG].between(-180, 180)
+    ]
 
     return df
