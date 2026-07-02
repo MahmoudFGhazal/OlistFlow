@@ -37,7 +37,6 @@ COLUMNS = [
 
 REQUIRED_COLUMNS = [
     PRODUCT_ID,
-    PRODUCT_CATEGORY_NAME,
 ]
 
 logger = logging.getLogger(f"etl.transform.{TABLE_NAME}")
