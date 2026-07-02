@@ -1,6 +1,8 @@
 import logging
 import pandas as pd
 
+from transform.enums import PaymentType
+
 from ..helper import validate_columns, validate_required_values
 
 """
@@ -92,17 +94,17 @@ def _apply_payments_rules(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
 
     # =========================
-    # Regra 2: payment_sequential válido (>= 1)
+    # Regra 1: payment_sequential válido (>= 1)
     # =========================
     df = df[df[PAYMENT_SEQUENTIAL] >= 1]
 
     # =========================
-    # Regra 3: payment_type deve estar no enum
+    # Regra 2: payment_type deve estar no enum
     # =========================
-    print(sorted(df[PAYMENT_TYPE].dropna().unique()))
+    df = df[df[PAYMENT_TYPE].isin([u.value for u in PaymentType])]
 
     # =========================
-    # Regra 4: installments deve ser >= 1
+    # Regra 3: installments deve ser >= 1
     # =========================
     df = df[df[PAYMENT_INSTALLMENTS] >= 1]
 

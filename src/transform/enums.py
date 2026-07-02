@@ -42,3 +42,9 @@ class OrderStatus(Enum):
     SHIPPED = "shipped"
     UNAVAILABLE = "unavailable"
 
+class PaymentType(Enum):
+    BOLETO = "boleto"
+    CREDIT_CARD = "credit_card"
+    DEBIT_CARD = "debit_card"
+    NOT_DEFINED = "not_defined"
+    VOUCHER = "voucher"

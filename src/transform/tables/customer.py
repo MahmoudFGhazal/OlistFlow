@@ -109,12 +109,6 @@ def _apply_customers_rules(df: pd.DataFrame) -> pd.DataFrame:
     # =========================
     # Regra 1: ZIP CODE = 5 caracteres
     # =========================
-    df[CUSTOMER_ZIP_CODE_PREFIX] = (
-        df[CUSTOMER_ZIP_CODE_PREFIX]
-        .astype("string")
-        .str.zfill(5)   
-    )
-
     df = df[df[CUSTOMER_ZIP_CODE_PREFIX].str.len() == 5]
 
     # =========================
