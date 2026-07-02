@@ -3,13 +3,14 @@ from typing import TypedDict
 
 import pandas as pd
 
+from .tables.order_item import transform_order_items
 from .helper import normalize_nulls
 from .tables.customer import transform_customers
 from .tables.location import transform_locations
 from .tables.orders import transform_orders
 from .tables.product import transform_products
 from .tables.seller import transform_sellers
-from .tables.categories import transform_categories
+from .tables.category import transform_categories
 
 logger = logging.getLogger("etl.transform")
 
@@ -38,7 +39,7 @@ def transform_datasets(raw: dict[str, pd.DataFrame]) -> TransformedDatasets:
     sellers = transform_sellers(raw["sellers"])
     products = transform_products(raw["products"])
     orders = transform_orders(raw["orders"])
-    #order_items = transform_order_items(raw["order_items"])
+    order_items = transform_order_items(raw["order_items"])
     ##payments = transform_payments(raw["payments"])
     #reviews = transform_reviews(raw["reviews"])
 
