@@ -67,6 +67,8 @@ def transform_reviews(df: pd.DataFrame) -> pd.DataFrame:
         ]
     )
 
+    df = _apply_reviews_rules(df)
+
     logger.info(f"{TABLE_NAME.capitalize()} transformada ({len(df)} registros)")
 
     return df
@@ -117,5 +119,25 @@ def _clean_reviews(df: pd.DataFrame) -> pd.DataFrame:
             df[column],
             errors="coerce"
         )
+
+    return df
+
+def _apply_reviews_rules(df: pd.DataFrame) -> pd.DataFrame:
+    logger.info(f"Aplicando regras {TABLE_NAME}")
+
+    df = df.copy()
+
+    # =========================
+    # Regra 1: score deve ser válido (1 a 5)
+    # =========================
+    df = df[(df[REVIEW_SCORE] >= 1) & (df[REVIEW_SCORE] <= 5)]
+
+    # =========================
+    # Regra 2: data de criação não pode ser maior que resposta
+    # =========================
+    df = df[
+        (df[REVIEW_ANSWER_TIMESTAMP].isna()) |
+        (df[REVIEW_CREATION_DATE] <= df[REVIEW_ANSWER_TIMESTAMP])
+    ]
 
     return df
