@@ -2,6 +2,9 @@ import logging
 from pathlib import Path
 import pandas as pd
 
+from src.errors.decorator import capture_error
+from src.errors.exceptions import ExtractionError
+
 DATASET_PATH = Path("data/raw")
 
 logger = logging.getLogger("etl.extract")
@@ -18,10 +21,13 @@ DATASET_NAMES = {
     "product_category_name_translation": "categories",
 }
 
-def _read_file(file: Path):
+def read_file(file: Path):
     try:
-        if file.suffix == ".csv":
-            df = pd.read_csv(file)
+        if file.suffix == ".csv" or file.suffix == ".xlsx":
+            if file.suffix == ".csv":
+                df = pd.read_csv(file)
+            else:
+                df = pd.read_excel(file)
 
             logger.info(
                 f"Arquivo {file.name} carregado "
@@ -29,11 +35,10 @@ def _read_file(file: Path):
             )
 
             return df
-    except Exception:
-        logger.exception(
+    except Exception as error:
+        raise ExtractionError(
             f"Erro ao processar o arquivo {file.name}"
-        )
-        raise
+        ) from error
     
     logger.warning(
         f"Arquivo ignorado: {file.name} "
@@ -42,6 +47,7 @@ def _read_file(file: Path):
 
     return None
 
+@capture_error("extract")
 def extract_dataset(path: Path = DATASET_PATH):
     logger.info("Iniciando a extração de arquivos")
 
@@ -49,7 +55,7 @@ def extract_dataset(path: Path = DATASET_PATH):
 
     for file in path.iterdir():
         if file.is_file():
-            data = _read_file(file)
+            data = read_file(file)
 
             if data is not None:
                 dataset_name = DATASET_NAMES.get(

@@ -1,6 +1,8 @@
 import logging
 import pandas as pd
 
+from src.errors.decorator import capture_error
+
 from ..helper import validate_columns, validate_required_values
 
 """
@@ -35,6 +37,10 @@ REQUIRED_COLUMNS = [
 
 logger = logging.getLogger(f"etl.transform.{TABLE_NAME}")
 
+@capture_error(
+    stage="TRANSFORM",
+    table="sellers"
+)
 def transform_sellers(df: pd.DataFrame) -> pd.DataFrame:
     logger.info(f"Transformando {TABLE_NAME}")
 

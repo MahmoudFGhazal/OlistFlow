@@ -3,6 +3,8 @@ from typing import TypedDict
 
 import pandas as pd
 
+from src.errors.decorator import capture_error
+
 from .tables.review import transform_reviews
 from .tables.payment import transform_payments
 from .tables.order_item import transform_order_items
@@ -27,6 +29,7 @@ class TransformedDatasets(TypedDict):
     payments: pd.DataFrame
     reviews: pd.DataFrame
 
+@capture_error("transform")
 def transform_datasets(raw: dict[str, pd.DataFrame]) -> TransformedDatasets:
     logger.info("Inciando Transformações")
 
