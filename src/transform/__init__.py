@@ -1,33 +1,22 @@
 import logging
-from typing import TypedDict
 
 import pandas as pd
 
 from src.errors.decorator import capture_error
+from src.transform.types import TransformedDatasets
 
 from .tables.review import transform_reviews
 from .tables.payment import transform_payments
 from .tables.order_item import transform_order_items
 from .helper import normalize_nulls
 from .tables.customer import transform_customers
-from .tables.location import transform_locations
+from .tables.geolocations import transform_geolocations
 from .tables.orders import transform_orders
 from .tables.product import transform_products
 from .tables.seller import transform_sellers
 from .tables.category import transform_categories
 
 logger = logging.getLogger("etl.transform")
-
-class TransformedDatasets(TypedDict):
-    categories: pd.DataFrame
-    customers: pd.DataFrame
-    locations: pd.DataFrame
-    sellers: pd.DataFrame
-    products: pd.DataFrame
-    orders: pd.DataFrame
-    order_items: pd.DataFrame
-    payments: pd.DataFrame
-    reviews: pd.DataFrame
 
 @capture_error("transform")
 def transform_datasets(raw: dict[str, pd.DataFrame]) -> TransformedDatasets:
@@ -40,7 +29,7 @@ def transform_datasets(raw: dict[str, pd.DataFrame]) -> TransformedDatasets:
 
     categories = transform_categories(raw["categories"])
     customers = transform_customers(raw["customers"])
-    locations = transform_locations(raw["locations"])
+    geolocations = transform_geolocations(raw["locations"])
     sellers = transform_sellers(raw["sellers"])
     products = transform_products(raw["products"])
     orders = transform_orders(raw["orders"])
@@ -53,7 +42,7 @@ def transform_datasets(raw: dict[str, pd.DataFrame]) -> TransformedDatasets:
     return TransformedDatasets(
         categories=categories,
         customers=customers,
-        locations=locations,
+        geolocations=geolocations,
         sellers=sellers,
         products=products,
         orders=orders,

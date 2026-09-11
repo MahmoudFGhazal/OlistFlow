@@ -25,7 +25,14 @@ Table categories {
 // =====================
 
 Enum order_status {
-  delivered
+  delivered,
+  approved,
+  canceled,
+  created,
+  invoiced,
+  processing,
+  shipped,
+  unavailable
 }
 
 Table orders {
@@ -63,7 +70,10 @@ Ref: order_items.seller_id > sellers.id
 
 Enum payment_type {
   credit_card
-  debit_card
+  debit_card,
+  boleto,
+  not_defined,
+  voucher
 }
 
 Table payments {

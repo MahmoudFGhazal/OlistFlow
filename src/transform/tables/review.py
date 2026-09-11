@@ -27,7 +27,7 @@ REVIEW_COMMENT_MESSAGE = "review_comment_message"
 REVIEW_CREATION_DATE = "review_creation_date"
 REVIEW_ANSWER_TIMESTAMP = "review_answer_timestamp"
 
-COLUMNS = [
+INPUT_COLUMNS = [
     REVIEW_ID,
     ORDER_ID,
     REVIEW_SCORE,
@@ -35,6 +35,10 @@ COLUMNS = [
     REVIEW_COMMENT_MESSAGE,
     REVIEW_CREATION_DATE,
     REVIEW_ANSWER_TIMESTAMP,
+]
+
+COLUMNS = [
+    *INPUT_COLUMNS,
 ]
 
 REQUIRED_COLUMNS = [
@@ -55,7 +59,7 @@ def transform_reviews(df: pd.DataFrame) -> pd.DataFrame:
 
     validate_columns(
         df,
-        required_columns=COLUMNS,
+        required_columns=INPUT_COLUMNS,
         table_name=TABLE_NAME
     )
 

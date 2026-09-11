@@ -27,7 +27,7 @@ PRODUCT_LENGTH_CM = "product_length_cm"
 PRODUCT_HEIGHT_CM = "product_height_cm"
 PRODUCT_WIDTH_CM = "product_width_cm"
 
-COLUMNS = [
+INPUT_COLUMNS = [
     PRODUCT_ID,
     PRODUCT_CATEGORY_NAME,
     PRODUCT_PHOTOS_QTY,
@@ -35,6 +35,10 @@ COLUMNS = [
     PRODUCT_LENGTH_CM,
     PRODUCT_HEIGHT_CM,
     PRODUCT_WIDTH_CM,
+]
+
+COLUMNS = [
+    *INPUT_COLUMNS,
 ]
 
 REQUIRED_COLUMNS = [
@@ -54,7 +58,7 @@ logger = logging.getLogger(f"etl.transform.{TABLE_NAME}")
 def transform_products(df: pd.DataFrame) -> pd.DataFrame:
     logger.info(f"Transformando {TABLE_NAME}")
 
-    validate_columns(df, required_columns=COLUMNS, table_name=TABLE_NAME)
+    validate_columns(df, required_columns=INPUT_COLUMNS, table_name=TABLE_NAME)
 
     df = _clean_products(df)
 

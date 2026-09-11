@@ -2,6 +2,7 @@ import logging
 import pandas as pd
 
 from src.errors.decorator import capture_error
+from src.transform.tables.comum import normalize_city
 
 from ..helper import validate_columns, validate_required_values
 
@@ -20,12 +21,18 @@ SELLER_ID = "seller_id"
 SELLER_ZIP_CODE_PREFIX = "seller_zip_code_prefix"
 SELLER_CITY = "seller_city"
 SELLER_STATE = "seller_state"
+SELLER_NORMALIZE_CITY = "seller_normalize_city"
 
-COLUMNS = [
+INPUT_COLUMNS = [
     SELLER_ID,
     SELLER_ZIP_CODE_PREFIX,
     SELLER_CITY,
     SELLER_STATE,
+]
+
+COLUMNS = [
+    *INPUT_COLUMNS,
+    SELLER_NORMALIZE_CITY,
 ]
 
 REQUIRED_COLUMNS = [
@@ -44,7 +51,7 @@ logger = logging.getLogger(f"etl.transform.{TABLE_NAME}")
 def transform_sellers(df: pd.DataFrame) -> pd.DataFrame:
     logger.info(f"Transformando {TABLE_NAME}")
 
-    validate_columns(df, required_columns=COLUMNS, table_name=TABLE_NAME)
+    validate_columns(df, required_columns=INPUT_COLUMNS, table_name=TABLE_NAME)
 
     df = _clean_sellers(df)
 
@@ -82,8 +89,10 @@ def _clean_sellers(df: pd.DataFrame) -> pd.DataFrame:
     df[SELLER_CITY] = (
         df[SELLER_CITY]
         .astype("string")
-        .str.strip()
         .str.replace(r"\s+", " ", regex=True)
+        .str.split("/", n=1)
+        .str[0]
+        .str.strip()
         .str.lower()
     )
 
@@ -116,4 +125,9 @@ def _apply_sellers_rules(df: pd.DataFrame) -> pd.DataFrame:
     # =========================
     df = df[df[SELLER_ZIP_CODE_PREFIX].str.len() >= 5]
 
+    # =========================
+    # Regra 3: Remover acentos da cidade
+    # =========================
+    df[SELLER_NORMALIZE_CITY] = df[SELLER_CITY].apply(normalize_city)
+    
     return df

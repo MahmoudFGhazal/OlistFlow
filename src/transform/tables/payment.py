@@ -20,11 +20,15 @@ PAYMENT_SEQUENTIAL = "payment_sequential"
 PAYMENT_TYPE = "payment_type"
 PAYMENT_INSTALLMENTS = "payment_installments"
 
-COLUMNS = [
+INPUT_COLUMNS = [
     ORDER_ID,
     PAYMENT_SEQUENTIAL,
     PAYMENT_TYPE,
     PAYMENT_INSTALLMENTS,
+]
+
+COLUMNS = [
+    *INPUT_COLUMNS,
 ]
 
 REQUIRED_COLUMNS = [
@@ -45,7 +49,7 @@ def transform_payments(df: pd.DataFrame) -> pd.DataFrame:
 
     validate_columns(
         df,
-        required_columns=COLUMNS,
+        required_columns=INPUT_COLUMNS,
         table_name=TABLE_NAME
     )
 

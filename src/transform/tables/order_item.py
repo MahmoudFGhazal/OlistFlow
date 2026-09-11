@@ -25,7 +25,7 @@ SHIPPING_LIMIT_DATE = "shipping_limit_date"
 PRICE = "price"
 FREIGHT_VALUE = "freight_value"
 
-COLUMNS = [
+INPUT_COLUMNS = [
     ORDER_ID,
     ORDER_ITEM_ID,
     PRODUCT_ID,
@@ -33,6 +33,10 @@ COLUMNS = [
     SHIPPING_LIMIT_DATE,
     PRICE,
     FREIGHT_VALUE,
+]
+
+COLUMNS = [
+    *INPUT_COLUMNS,
 ]
 
 REQUIRED_COLUMNS = [
@@ -54,7 +58,7 @@ logger = logging.getLogger(f"etl.transform.{TABLE_NAME}")
 def transform_order_items(df: pd.DataFrame) -> pd.DataFrame:
     logger.info(f"Transformando {TABLE_NAME}")
 
-    validate_columns(df, required_columns=COLUMNS, table_name=TABLE_NAME)
+    validate_columns(df, required_columns=INPUT_COLUMNS, table_name=TABLE_NAME)
 
     df = _clean_order_items(df)
 

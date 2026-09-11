@@ -14,13 +14,13 @@ def capture_error(stage, table=None):
                 return func(*args, **kwargs)
 
             except Exception as error:
-
-                handle_error(
-                    error,
-                    stage,
-                    table
-                )
-
+                if not getattr(error, "_already_logged", False):
+                    handle_error(
+                        error,
+                        stage,
+                        table
+                    )
+                    error._already_logged = True
                 raise
 
         return wrapper

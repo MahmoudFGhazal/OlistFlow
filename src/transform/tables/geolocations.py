@@ -2,6 +2,7 @@ import logging
 import pandas as pd
 
 from src.errors.decorator import capture_error
+from src.transform.tables.comum import normalize_city
 
 from ..enums import UF
 from ..helper import validate_columns, validate_required_values
@@ -22,14 +23,20 @@ GEOLOCATION_ZIP_CODE_PREFIX = "geolocation_zip_code_prefix"
 GEOLOCATION_LAT = "geolocation_lat"
 GEOLOCATION_LNG = "geolocation_lng"
 GEOLOCATION_CITY = "geolocation_city"
+GEOLOCATION_NORMALIZE_CITY = "geolocation_normalize_city"
 GEOLOCATION_STATE = "geolocation_state"
 
-COLUMNS = [
+INPUT_COLUMNS = [
     GEOLOCATION_ZIP_CODE_PREFIX,
     GEOLOCATION_LAT,
     GEOLOCATION_LNG,
     GEOLOCATION_CITY,
     GEOLOCATION_STATE,
+]
+
+COLUMNS = [
+    *INPUT_COLUMNS,
+    GEOLOCATION_NORMALIZE_CITY,
 ]
 
 REQUIRED_COLUMNS = [
@@ -46,12 +53,12 @@ logger = logging.getLogger(f"etl.transform.{TABLE_NAME}")
     stage="TRANSFORM",
     table="locations"
 )
-def transform_locations(df: pd.DataFrame) -> pd.DataFrame:
+def transform_geolocations(df: pd.DataFrame) -> pd.DataFrame:
     logger.info(f"Transformando {TABLE_NAME}")
 
-    validate_columns(df, required_columns=COLUMNS, table_name=TABLE_NAME)
+    validate_columns(df, required_columns=INPUT_COLUMNS, table_name=TABLE_NAME)
 
-    df = _clean_locations(df)
+    df = _clean_geolocations(df)
 
     df = validate_required_values(df, required_columns=REQUIRED_COLUMNS, table_name=TABLE_NAME)
 
@@ -69,7 +76,7 @@ def transform_locations(df: pd.DataFrame) -> pd.DataFrame:
 
     return df
 
-def _clean_locations(df: pd.DataFrame) -> pd.DataFrame:
+def _clean_geolocations(df: pd.DataFrame) -> pd.DataFrame:
     logger.info(f"Limpando {TABLE_NAME}")
 
     df = df.copy()
@@ -101,8 +108,10 @@ def _clean_locations(df: pd.DataFrame) -> pd.DataFrame:
     df[GEOLOCATION_STATE] = (
         df[GEOLOCATION_STATE]
         .astype("string")
-        .str.strip()
         .str.replace(r"\s+", " ", regex=True)
+        .str.split("/", n=1)
+        .str[0]
+        .str.strip()
         .str.upper()
     )
 
@@ -149,5 +158,11 @@ def _apply_locations_rules(df: pd.DataFrame) -> pd.DataFrame:
 
     df[GEOLOCATION_LAT] = df.groupby(GROUP_COLS)[GEOLOCATION_LAT].transform("mean")
     df[GEOLOCATION_LNG] = df.groupby(GROUP_COLS)[GEOLOCATION_LNG].transform("mean")
+
+    # =========================
+    # Regra 6: Remover acentos da cidade
+    # =========================
+    df[GEOLOCATION_NORMALIZE_CITY] = df[GEOLOCATION_CITY].apply(normalize_city)
+    
 
     return df

@@ -31,7 +31,7 @@ ORDER_DELIVERED_CARRIER_DATE = "order_delivered_carrier_date"
 ORDER_DELIVERED_CUSTOMER_DATE = "order_delivered_customer_date"
 ORDER_ESTIMATED_DELIVERY_DATE = "order_estimated_delivery_date"
 
-COLUMNS = [
+INPUT_COLUMNS = [
     ORDER_ID,
     CUSTOMER_ID,
     ORDER_STATUS,
@@ -40,6 +40,10 @@ COLUMNS = [
     ORDER_DELIVERED_CARRIER_DATE,
     ORDER_DELIVERED_CUSTOMER_DATE,
     ORDER_ESTIMATED_DELIVERY_DATE,
+]
+
+COLUMNS = [
+    *INPUT_COLUMNS,
 ]
 
 REQUIRED_COLUMNS = [
@@ -59,7 +63,7 @@ logger = logging.getLogger(f"etl.transform.{TABLE_NAME}")
 def transform_orders(df: pd.DataFrame) -> pd.DataFrame:
     logger.info(f"Transformando {TABLE_NAME}")
 
-    validate_columns(df, required_columns=COLUMNS, table_name=TABLE_NAME)
+    validate_columns(df, required_columns=INPUT_COLUMNS, table_name=TABLE_NAME)
 
     df = _clean_orders(df)
 
@@ -111,6 +115,7 @@ def _clean_orders(df: pd.DataFrame) -> pd.DataFrame:
 
     for column in DATETIME_COLUMNS:
         df[column] = pd.to_datetime(df[column], errors="coerce")
+        df[column] = df[column].astype(object).where(df[column].notna(), None)
 
     return df
 

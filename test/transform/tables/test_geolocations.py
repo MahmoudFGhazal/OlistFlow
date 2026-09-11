@@ -1,8 +1,8 @@
 import pandas as pd
 
-from src.transform.tables.location import transform_locations
+from src.transform.tables.geolocations import transform_geolocations, transform_locations
 
-def test_transform_locations():
+def test_transform_geolocations():
 
     df = pd.DataFrame({
         "geolocation_zip_code_prefix": ["12345", "12345"],
@@ -12,7 +12,7 @@ def test_transform_locations():
         "geolocation_state": ["sp", "SP"],
     })
 
-    result = transform_locations(df)
+    result = transform_geolocations(df)
 
     assert len(result) == 2
 
